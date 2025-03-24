@@ -70,7 +70,7 @@ function MediaRenderer({ media }) {
     case 'pdf':
       return (
         <div style={containerStyle}>
-          <iframe src={media.url} width="100%" height="20%" title="PDF Viewer" />
+          <iframe src={media.url} width="100%" height="10%" title="PDF Viewer" />
           {renderDownloadButton()}
         </div>
       );
@@ -130,7 +130,7 @@ function MediaRenderer({ media }) {
             border: '1px solid #ccc',
             borderRadius: '5px',
             textAlign: 'center',
-            minWidth: '200px'
+            minWidth: '100px'
           }}>
             {/* Generic file icon, can be replaced with a specific icon */}
             <div style={{ fontSize: '32px' }}>📄</div>
