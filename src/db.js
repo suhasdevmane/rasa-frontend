@@ -1,13 +1,18 @@
 // src/db.js
 import Dexie from 'dexie';
 
-// Create (or open) a database
-const db = new Dexie('ChatDatabase');
+// Create a new database named 'ChatDB'
+const db = new Dexie('ChatDB');
 
-// Define a schema for a "messages" table.
-// Here, "++id" is an auto-incrementing primary key.
+// Define the database schema
 db.version(1).stores({
-  messages: '++id, sender, text, timestamp, attachment'
+  // The 'users' store holds user credentials.
+  // '++id' means auto-incremented primary key.
+  users: '++id, username, password',
+
+  // The 'chatHistory' store holds the chat history per user.
+  // We'll index by username.
+  chatHistory: '++id, username, messages'
 });
 
 export default db;

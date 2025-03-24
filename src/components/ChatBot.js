@@ -4,8 +4,10 @@ import axios from 'axios';
 import Message from './Message';
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import { BsDownload, BsTrash, BsDashSquare, BsChatDotsFill } from 'react-icons/bs';
+import db from '../db';
+import '../App.css'; // Import the CSS file
 
-const RASA_ENDPOINT = "http://localhost:5005/webhooks/rest/webhook"; // Update if needed
+const RASA_ENDPOINT = "http://localhost:5005/webhooks/rest/webhook";
 
 function ChatBot() {
   const [messages, setMessages] = useState([]);
@@ -13,35 +15,38 @@ function ChatBot() {
   const [minimized, setMinimized] = useState(false);
   const textAreaRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const currentUser = sessionStorage.getItem('currentUser');
 
-  // Load chat history on mount and add a welcome message if empty
+  // Load chat history from IndexedDB for the current user on mount
   useEffect(() => {
-    const storedHistory = localStorage.getItem('chatHistory');
-    if (storedHistory) {
-      const parsedHistory = JSON.parse(storedHistory);
-      if (parsedHistory && parsedHistory.length > 0) {
-        setMessages(parsedHistory);
-      } else {
-        setMessages([{
-          sender: 'bot',
-          text: 'Welcome to our chat! How can I help you today?',
-          timestamp: new Date().toLocaleTimeString(),
-        }]);
-      }
-    } else {
-      setMessages([{
-        sender: 'bot',
-        text: 'Welcome to our chat! How can I help you today?',
-        timestamp: new Date().toLocaleTimeString(),
-      }]);
+    if (currentUser) {
+      db.chatHistory.where('username').equals(currentUser).first().then(record => {
+        if (record && record.messages && record.messages.length > 0) {
+          setMessages(record.messages);
+        } else {
+          setMessages([{
+            sender: 'bot',
+            text: 'Welcome to our chat! How can I help you today?',
+            timestamp: new Date().toLocaleTimeString(),
+          }]);
+        }
+      });
     }
-  }, []);
+  }, [currentUser]);
 
-  // Save chat history to localStorage and auto-scroll whenever messages update
+  // Save chat history to IndexedDB and auto-scroll whenever messages update
   useEffect(() => {
-    localStorage.setItem('chatHistory', JSON.stringify(messages));
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (currentUser) {
+      db.chatHistory.where('username').equals(currentUser).first().then(record => {
+        if (record) {
+          db.chatHistory.update(record.id, { messages });
+        } else {
+          db.chatHistory.add({ username: currentUser, messages });
+        }
+      });
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, currentUser]);
 
   const addMessage = (message) => {
     if (!message.timestamp) {
@@ -107,7 +112,9 @@ function ChatBot() {
   };
 
   const clearChatHistory = () => {
-    localStorage.removeItem('chatHistory');
+    if (currentUser) {
+      db.chatHistory.where('username').equals(currentUser).modify({ messages: [] });
+    }
     setMessages([]);
   };
 
@@ -117,57 +124,49 @@ function ChatBot() {
 
   // Full chat UI view (when not minimized)
   const fullChatUI = (
-    <Container 
-      className="my-4" 
-      style={{ 
-        position: 'fixed', 
-        bottom: '20px', 
-        right: '20px', 
-        maxWidth: '400px', 
-        zIndex: 9999 
-      }}
-    >
+    <Container className="my-4" style={{ position: 'fixed', bottom: '20px', right: '20px', maxWidth: '500px', zIndex: 9999 }}>
       <Row>
         <Col>
-          <div className="chat-container border rounded bg-white shadow" style={{overflow: 'hidden' }}>
+          <div className="chat-container border rounded bg-white shadow">
             {/* Chat Header */}
-            <div className="chat-header d-flex justify-content-between align-items-center p-2 border-bottom">
+            <div className="chat-header d-flex justify-content-between align-items-center">
               <h5 className="mb-0">Talk2MeBot</h5>
               <Button variant="light" size="sm" onClick={toggleMinimize}>
                 <BsDashSquare />
               </Button>
             </div>
-            {/* Chat Messages and Input */}
-            <div className="chat-body" style={{ height: 'calc(100% - 50px)' }}>
-              <div 
-                className="chat-messages p-3" 
-                style={{ height: '70%', overflowY: 'auto', backgroundColor: '#f5f5f5' }}
-              >
+            {/* Chat Body */}
+            <div className="chat-body d-flex flex-column">
+              {/* Scrollable messages area */}
+              <div className="chat-messages p-3 flex-grow-1 overflow-auto">
                 {messages.map((msg, index) => (
                   <Message key={index} message={msg} />
                 ))}
                 <div ref={messagesEndRef} />
               </div>
-              <div className="chat-input p-3 border-top d-flex align-items-end" style={{ height: '30%' }}>
-                <Form className="w-100">
-                  <Form.Group controlId="chatInput">
-                    <Form.Control 
-                      as="textarea"
-                      rows={1}
-                      ref={textAreaRef}
-                      placeholder="Type your message..."
-                      value={userInput}
-                      onChange={handleTextAreaChange}
-                      onKeyDown={handleKeyDown}
-                      style={{ resize: 'none', overflow: 'hidden' }}
-                    />
-                  </Form.Group>
-                </Form>
-                <div className="ms-2 d-flex flex-column">
-                  <Button variant="secondary" onClick={downloadChatHistory} className="mb-2 p-2">
+              {/* Chat Input Area */}
+              <div className="chat-input">
+                <div className="input-wrapper">
+                  <Form className="w-100">
+                    <Form.Group controlId="chatInput">
+                      <Form.Control 
+                        as="textarea"
+                        rows={3}
+                        ref={textAreaRef}
+                        placeholder="Type your message..."
+                        value={userInput}
+                        onChange={handleTextAreaChange}
+                        onKeyDown={handleKeyDown}
+                        style={{ resize: 'none', overflow: 'hidden' }}
+                      />
+                    </Form.Group>
+                  </Form>
+                </div>
+                <div className="chat-buttons">
+                  <Button variant="secondary" onClick={downloadChatHistory}>
                     <BsDownload size={20} />
                   </Button>
-                  <Button variant="danger" onClick={clearChatHistory} className="p-2">
+                  <Button variant="danger" onClick={clearChatHistory}>
                     <BsTrash size={20} />
                   </Button>
                 </div>
@@ -179,24 +178,9 @@ function ChatBot() {
     </Container>
   );
 
-  // Minimized view: only a small floating button/icon
   const minimizedView = (
-    <div style={{ 
-      position: 'fixed', 
-      bottom: '20px', 
-      right: '20px', 
-      zIndex: 9999 
-    }}>
-      <Button 
-        variant="primary" 
-        onClick={toggleMinimize} 
-        style={{ 
-          borderRadius: '50%', 
-          width: '60px', 
-          height: '60px', 
-          padding: 0 
-        }}
-      >
+    <div className="chat-minimized" style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 9999 }}>
+      <Button variant="primary" onClick={toggleMinimize} style={{ borderRadius: '50%', width: '60px', height: '60px', padding: 0 }}>
         <BsChatDotsFill size={30} />
       </Button>
     </div>
@@ -214,7 +198,4 @@ export default ChatBot;
 
 
 
-
-
-
-// this is my test
+// this is sample code xzsdf jdopsf  asdf asod 
