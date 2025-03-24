@@ -1,38 +1,101 @@
-.App {
-  text-align: center;
+/* src/styles.css */
+
+/* Global resets and background */
+* {
+  box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #e9ebee; /* light grey background similar to Facebook */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Chat Container */
+.chat-container {
   display: flex;
   flex-direction: column;
+  height: 90vh;
+  max-width: 1400px;
+  margin: 20px auto;
+  border: 1px solid hwb(0 4% 94%);
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Chat messages area */
+.chat-messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background-color: hsl(0, 16%, 40%);
+}
+
+/* Chat input area */
+.chat-input {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  padding: 10px;
+  background-color: hwb(0 31% 62%);
+  border-top: 1px solid #ddd;
 }
 
-.App-link {
-  color: #61dafb;
+.chat-input input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+  font-size: 16px;
+  margin-right: 180px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.chat-input button {
+  background-color: #007bff;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
 }
+
+.chat-input button:hover {
+  background-color: #0056b3;
+}
+
+/* Message bubbles styling */
+.message {
+  display: block;
+  max-width: 70%;
+  padding: 10px 15px;
+  margin: 10px 0;
+  border-radius: 20px;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+/* User message (right aligned, WhatsApp style green bubble) */
+.message.user {
+  align-self: flex-end;
+  background-color: #dcf8c6;
+  color: #000;
+  border-bottom-right-radius: 0;
+  margin-left: auto;
+}
+
+/* Bot message (left aligned, clean white bubble with border) */
+.message.bot {
+  align-self: flex-start;
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ddd;
+  border-bottom-left-radius: 0;
+  margin-right: auto;
+}
+
+
+
