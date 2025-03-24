@@ -45,15 +45,7 @@
   align-items: center;
 }
 
-/* Chat header styling */
-.chat-header {
-  padding: 10px 15px;
-  border-bottom: 1px solid #ddd;
-  background-color: #f8f8f8;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+
 
 /* Chat messages area */
 .chat-messages {

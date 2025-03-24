@@ -159,7 +159,8 @@ function ChatBot() {
         bottom: '20px',
         right: '20px',
         maxWidth: '500px',
-        height: '630px',
+        height: '640px',
+        padding: 0,
         zIndex: 9999,
       };
 
@@ -172,7 +173,7 @@ function ChatBot() {
       <div className="chat-inner">
         {/* Header */}
         <div className="chat-header">
-          <h5 className="mb-0">Talk2MeBot</h5>
+          <h5 className="mb-0"> 💬 Talk2MeBot</h5>
           <div className="header-buttons">
             <Button variant="light" size="sm" onClick={toggleFullScreen}>
               {isFullScreen ? <BsFullscreenExit /> : <BsFullscreen />}
