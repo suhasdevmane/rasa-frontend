@@ -1,14 +1,48 @@
-/* src/ChatBot.css */
-
-/* Outer container for chat UI */
+/* Default chat container (normal mode) */
 .chat-container {
   overflow: hidden;
-  height: 630px;           /* Fixed height for the chat container */
+  height: 620px;           /* Fixed height for normal mode */
   max-width: 500px;
   background: #fff;
   border: 1px solid #ddd;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Fullscreen chat container – no fixed height/width constraints */
+.fullscreen-chat-container {
+  overflow: hidden;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Wrapper for chat content */
+.chat-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+
+.chat-body {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 50px); /* Adjust based on header's height */
+}
+/* Chat header styling */
+.chat-header {
+  flex: 0 0 50px;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #ddd;
+  padding: 0px 15px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* Chat header styling */
@@ -21,20 +55,7 @@
   align-items: center;
 }
 
-.chat-header h5 {
-  margin: 0;
-  color: #333;
-  font-weight: bold;
-}
-
-/* Chat body container using flexbox */
-.chat-body {
-  display: flex;
-  flex-direction: column;
-  height: calc(100% - 50px); /* Adjust based on header's height */
-}
-
-/* Scrollable messages area */
+/* Chat messages area */
 .chat-messages {
   flex-grow: 1;
   padding: 15px;
@@ -42,7 +63,7 @@
   background-color: #f5f5f5;
 }
 
-/* Custom scrollbar for WebKit browsers (optional) */
+/* Custom scrollbar (optional) */
 .chat-messages::-webkit-scrollbar {
   width: 8px;
 }
@@ -56,6 +77,7 @@
   border-radius: 4px;
 }
 
+/* Chat input area */
 /* Chat input area styling */
 .chat-input {
   display: flex;
@@ -65,43 +87,28 @@
   background-color: #fff;
 }
 
-/* The input-wrapper takes all available horizontal space */
+/* Input wrapper takes full width */
 .input-wrapper {
   flex: 1;
 }
 
-/* Buttons container arranged vertically to the right of the text input */
+/* Buttons container for input (vertical stack) */
 .chat-buttons {
   display: flex;
   flex-direction: column;
-  margin-left: 8px; /* Adjust spacing between the text input and the buttons */
+  margin-left: 8px;
   gap: 5px;
 }
 
-/* Styling for minimized chat button */
+/* Minimized chat button */
 .chat-minimized {
   position: fixed;
   bottom: 20px;
   right: 20px;
   z-index: 9999;
 }
-/* Fullscreen styles for the chat container */
-#chat-container:fullscreen,
-#chat-container:-webkit-full-screen,
-#chat-container:-moz-full-screen,
-#chat-container:-ms-fullscreen {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  bottom: 0 !important;
-  right: 0 !important;
-  /* width: 200vw !important;
-  height: 200vh !important; */
-  margin: 0 !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  background-color: #fff !important;
-  z-index: 10000 !important;
-}
 
+/* Optional: Ensure header buttons have some right margin */
+.header-buttons > button {
+  margin-left: 5px;
+}
