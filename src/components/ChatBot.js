@@ -3,13 +3,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Message from './Message';
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
-import { BsDownload, BsTrash } from 'react-icons/bs';
+import { BsDownload, BsTrash, BsDashSquare, BsChatDotsFill } from 'react-icons/bs';
 
 const RASA_ENDPOINT = "http://localhost:5005/webhooks/rest/webhook"; // Update if needed
 
 function ChatBot() {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
+  const [minimized, setMinimized] = useState(false);
   const textAreaRef = useRef(null);
   const messagesEndRef = useRef(null);
 
@@ -21,7 +22,6 @@ function ChatBot() {
       if (parsedHistory && parsedHistory.length > 0) {
         setMessages(parsedHistory);
       } else {
-        // Stored history is empty array
         setMessages([{
           sender: 'bot',
           text: 'Welcome to our chat! How can I help you today?',
@@ -29,7 +29,6 @@ function ChatBot() {
         }]);
       }
     } else {
-      // No stored history exists
       setMessages([{
         sender: 'bot',
         text: 'Welcome to our chat! How can I help you today?',
@@ -112,42 +111,66 @@ function ChatBot() {
     setMessages([]);
   };
 
-  return (
-    <Container className="my-4">
+  const toggleMinimize = () => {
+    setMinimized(prev => !prev);
+  };
+
+  // Full chat UI view (when not minimized)
+  const fullChatUI = (
+    <Container 
+      className="my-4" 
+      style={{ 
+        position: 'fixed', 
+        bottom: '20px', 
+        right: '20px', 
+        maxWidth: '400px', 
+        zIndex: 9999 
+      }}
+    >
       <Row>
-        <Col md={{ span: 8, offset: 2 }}>
-          <div className="chat-container border rounded bg-white shadow">
-            <div 
-              className="chat-messages p-3" 
-              style={{ height: '60vh', overflowY: 'auto', backgroundColor: '#f5f5f5' }}
-            >
-              {messages.map((msg, index) => (
-                <Message key={index} message={msg} />
-              ))}
-              <div ref={messagesEndRef} />
+        <Col>
+          <div className="chat-container border rounded bg-white shadow" style={{overflow: 'hidden' }}>
+            {/* Chat Header */}
+            <div className="chat-header d-flex justify-content-between align-items-center p-2 border-bottom">
+              <h5 className="mb-0">Talk2MeBot</h5>
+              <Button variant="light" size="sm" onClick={toggleMinimize}>
+                <BsDashSquare />
+              </Button>
             </div>
-            <div className="chat-input p-3 border-top d-flex align-items-end">
-              <Form className="w-100">
-                <Form.Group controlId="chatInput">
-                  <Form.Control 
-                    as="textarea"
-                    rows={1}
-                    ref={textAreaRef}
-                    placeholder="Type your message..."
-                    value={userInput}
-                    onChange={handleTextAreaChange}
-                    onKeyDown={handleKeyDown}
-                    style={{ resize: 'none', overflow: 'hidden' }}
-                  />
-                </Form.Group>
-              </Form>
-              <div className="ms-2 d-flex flex-column">
-                <Button variant="secondary" onClick={downloadChatHistory} className="mb-2 p-2">
-                  <BsDownload size={20} />
-                </Button>
-                <Button variant="danger" onClick={clearChatHistory} className="p-2">
-                  <BsTrash size={20} />
-                </Button>
+            {/* Chat Messages and Input */}
+            <div className="chat-body" style={{ height: 'calc(100% - 50px)' }}>
+              <div 
+                className="chat-messages p-3" 
+                style={{ height: '70%', overflowY: 'auto', backgroundColor: '#f5f5f5' }}
+              >
+                {messages.map((msg, index) => (
+                  <Message key={index} message={msg} />
+                ))}
+                <div ref={messagesEndRef} />
+              </div>
+              <div className="chat-input p-3 border-top d-flex align-items-end" style={{ height: '30%' }}>
+                <Form className="w-100">
+                  <Form.Group controlId="chatInput">
+                    <Form.Control 
+                      as="textarea"
+                      rows={1}
+                      ref={textAreaRef}
+                      placeholder="Type your message..."
+                      value={userInput}
+                      onChange={handleTextAreaChange}
+                      onKeyDown={handleKeyDown}
+                      style={{ resize: 'none', overflow: 'hidden' }}
+                    />
+                  </Form.Group>
+                </Form>
+                <div className="ms-2 d-flex flex-column">
+                  <Button variant="secondary" onClick={downloadChatHistory} className="mb-2 p-2">
+                    <BsDownload size={20} />
+                  </Button>
+                  <Button variant="danger" onClick={clearChatHistory} className="p-2">
+                    <BsTrash size={20} />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -155,6 +178,43 @@ function ChatBot() {
       </Row>
     </Container>
   );
+
+  // Minimized view: only a small floating button/icon
+  const minimizedView = (
+    <div style={{ 
+      position: 'fixed', 
+      bottom: '20px', 
+      right: '20px', 
+      zIndex: 9999 
+    }}>
+      <Button 
+        variant="primary" 
+        onClick={toggleMinimize} 
+        style={{ 
+          borderRadius: '50%', 
+          width: '60px', 
+          height: '60px', 
+          padding: 0 
+        }}
+      >
+        <BsChatDotsFill size={30} />
+      </Button>
+    </div>
+  );
+
+  return (
+    <>
+      {minimized ? minimizedView : fullChatUI}
+    </>
+  );
 }
 
 export default ChatBot;
+
+
+
+
+
+
+
+// this is my test

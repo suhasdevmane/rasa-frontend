@@ -16,15 +16,24 @@ body, html {
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 90vh;
-  max-width: 1400px;
+  height: 85vh;
+  max-width: 1600px;
   margin: 20px auto;
   border: 1px solid hwb(0 4% 94%);
   border-radius: 10px;
   background-color: #fff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: height 0.3s ease;
+}
+/* When minimized, only the header (about 60px tall) is visible */
+.chat-container.minimized {
+  height: 60px;
 }
 
+/* When maximized, the container expands to 60vh (or your preferred height) */
+.chat-container.maximized {
+  height: 80vh;
+}
 /* Chat messages area */
 .chat-messages {
   flex: 1;
