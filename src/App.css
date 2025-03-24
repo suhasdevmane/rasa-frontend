@@ -85,5 +85,23 @@
   right: 20px;
   z-index: 9999;
 }
-
+/* Fullscreen styles for the chat container */
+#chat-container:fullscreen,
+#chat-container:-webkit-full-screen,
+#chat-container:-moz-full-screen,
+#chat-container:-ms-fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  /* width: 200vw !important;
+  height: 200vh !important; */
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: #fff !important;
+  z-index: 10000 !important;
+}
 
