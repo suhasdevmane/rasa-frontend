@@ -14,6 +14,7 @@ function ChatBot() {
   const [userInput, setUserInput] = useState('');
   const [minimized, setMinimized] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // New loading state
   const textAreaRef = useRef(null);
   const messagesEndRef = useRef(null);
   const currentUser = sessionStorage.getItem('currentUser');
@@ -64,6 +65,7 @@ function ChatBot() {
       timestamp: new Date().toLocaleTimeString(),
     };
     addMessage(userMessage);
+    setIsLoading(true); // Set loading state to true
     try {
       const response = await axios.post(RASA_ENDPOINT, { sender: 'user', message: userInput });
       const botMessages = response.data.map(msg => ({
@@ -79,6 +81,8 @@ function ChatBot() {
         text: "Error communicating with the server.",
         timestamp: new Date().toLocaleTimeString(),
       });
+    } finally {
+      setIsLoading(false); // Clear loading state
     }
     setUserInput('');
     if (textAreaRef.current) {
@@ -149,7 +153,7 @@ function ChatBot() {
         top: 0,
         left: 0,
         width: '100vw',
-        height: '900vh',
+        height: '100vh',
         margin: 0,
         padding: 0,
         zIndex: 10000,
@@ -173,7 +177,7 @@ function ChatBot() {
       <div className="chat-inner">
         {/* Header */}
         <div className="chat-header">
-          <h5 className="mb-0"> 💬 Talk2MeBot</h5>
+          <h5 className="mb-0"> 💬 BrickBot</h5>
           <div className="header-buttons">
             <Button variant="light" size="sm" onClick={toggleFullScreen}>
               {isFullScreen ? <BsFullscreenExit /> : <BsFullscreen />}
@@ -188,6 +192,11 @@ function ChatBot() {
           {messages.map((msg, index) => (
             <Message key={index} message={msg} />
           ))}
+          {isLoading && (
+            <div className="processing-message text-center my-2">
+              <span className="processing-text">Processing... please wait.</span>
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
         {/* Input */}
